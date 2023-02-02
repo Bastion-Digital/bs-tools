@@ -2,7 +2,20 @@
   let _this = this;
   const prefix = "bs-roro-";
 
-  getAttr = (el, attr) => el.getAttribute(prefix + attr);
+  const defaults = {
+    type: "text",
+    onEvent: "mouseover",
+    offEvent: "mouseout",
+    alt: "Te Reo",
+    class: "bs-roro-active",
+    duration: "0",
+  };
+
+  getAttr = (el, attr) => {
+    const elAttr = el.getAttribute(prefix + attr);
+    if (elAttr) return elAttr;
+    else return defaults[attr];
+  };
 
   document.querySelectorAll("[bs-roro-type]").forEach((el) => {
     const cfg = {
@@ -14,10 +27,6 @@
       duration: getAttr(el, "duration"),
     };
 
-    const transitionDuration = window
-      .getComputedStyle(el)
-      .getPropertyValue("transition-duration");
-    console.log(transitionDuration);
     if (cfg.type === "text") {
       cfg.original = el.innerText;
       try {
