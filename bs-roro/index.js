@@ -17,6 +17,18 @@
     else return defaults[attr];
   };
 
+  function getTarget(node) {
+    const children = node.children;
+    for (let i = 0; i < children.length; i++) {
+      if (children[i].hasAttribute("bs-roro-target")) {
+        return children[i];
+      } else if (children[i].children.length) {
+        getTarget(children[i]);
+      }
+    }
+    return node;
+  }
+
   document.querySelectorAll("[bs-roro-type]").forEach((el) => {
     const cfg = {
       type: getAttr(el, "type"),
@@ -27,25 +39,26 @@
       duration: getAttr(el, "duration"),
     };
 
+    const target = getTarget(el);
     if (cfg.type === "text") {
-      cfg.original = el.innerText;
+      cfg.original = target.innerText;
       try {
         el.addEventListener(cfg.onEvent, (evt) => {
-          if (el.innerText === cfg.alt) return;
-          el.style.opacity = 0;
+          if (target.innerText === cfg.alt) return;
+          target.style.opacity = 0;
           setTimeout(() => {
-            el.classList.add(cfg.class);
-            el.innerText = cfg.alt;
-            el.style.opacity = 1;
+            target.classList.add(cfg.class);
+            target.innerText = cfg.alt;
+            target.style.opacity = 1;
           }, cfg.duration);
         });
         el.addEventListener(cfg.offEvent, (evt) => {
-          if (el.innerText === cfg.original) return;
-          el.style.opacity = 0;
+          if (target.innerText === cfg.original) return;
+          target.style.opacity = 0;
           setTimeout(() => {
-            el.classList.remove(cfg.class);
-            el.innerText = cfg.original;
-            el.style.opacity = 1;
+            target.classList.remove(cfg.class);
+            target.innerText = cfg.original;
+            target.style.opacity = 1;
           }, cfg.duration);
         });
       } catch (e) {
